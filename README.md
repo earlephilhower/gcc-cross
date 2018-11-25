@@ -1,6 +1,8 @@
 # gcc-cross
 Docker scripts to build earlephilhower/gcc-cross
 
+Installs GCC toolchain for Mac, Windows (64/32), ARM64, Rasbperry Pi
+
 ## Build Docker Image
 ````
 docker build -t gcc-cross .
