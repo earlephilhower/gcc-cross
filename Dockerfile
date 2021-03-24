@@ -4,7 +4,7 @@ MAINTAINER Earle F. Philhower, III version: 0.4
 # Install dependencies
 RUN apt-get update && \
     apt-get install -y gcc g++ make flex bison texinfo autogen mingw-w64 git libgmp3-dev libmpfr-dev libmpc-dev zlib1g-dev clang wget autoconf \
-                       gcc-aarch64-linux-gnu g++-aarch64-linux-gnu zip python-pip gcc-i686-linux-gnu g++-i686-linux-gnu && \
+                       gcc-aarch64-linux-gnu g++-aarch64-linux-gnu zip python-pip gcc-i686-linux-gnu g++-i686-linux-gnu libtool pkg-config libusb-1.0-0-dev && \
     pip install virtualenv
 
 # RPI
