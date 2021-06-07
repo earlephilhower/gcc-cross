@@ -1,17 +1,18 @@
 FROM ubuntu:18.04
-MAINTAINER Earle F. Philhower, III version: 0.4
+MAINTAINER Earle F. Philhower, III version: 0.5
 
 # Install dependencies
 RUN apt-get update && \
     apt-get install -y gcc g++ make flex bison texinfo autogen mingw-w64 git libgmp3-dev libmpfr-dev libmpc-dev zlib1g-dev clang wget autoconf \
+                       gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf \
                        gcc-aarch64-linux-gnu g++-aarch64-linux-gnu zip python-pip gcc-i686-linux-gnu g++-i686-linux-gnu libtool pkg-config libusb-1.0-0-dev && \
     pip install virtualenv
 
 # RPI
-RUN mkdir -p /opt && \
-    git clone --depth 1 --single-branch https://github.com/earlephilhower/rpitools /opt/raspi && \
-    cd /opt/raspi/arm-bcm2708 && \
-    rm -rf arm-bcm2708-linux-gnueabi arm-bcm2708hardfp-linux-gnueabi/ gcc-linaro-arm-linux-gnueabihf-raspbian gcc-linaro-arm-linux-gnueabihf-raspbian-x64
+#RUN mkdir -p /opt && \
+#    git clone --depth 1 --single-branch https://github.com/earlephilhower/rpitools /opt/raspi && \
+#    cd /opt/raspi/arm-bcm2708 && \
+#    rm -rf arm-bcm2708-linux-gnueabi arm-bcm2708hardfp-linux-gnueabi/ gcc-linaro-arm-linux-gnueabihf-raspbian gcc-linaro-arm-linux-gnueabihf-raspbian-x64
 
 # Get Mac crosscompile code
 RUN mkdir -p /opt && \
@@ -25,4 +26,4 @@ RUN mkdir -p /opt && \
 RUN cd /opt/osxcross && UNATTENDED=1 GCC_VERSION=7.3.0 ./build.sh && UNATTENDED=1 GCC_VERSION=7.3.0 ./build_gcc.sh && rm -rf build
 
 # Add /opt/* to all default PATHs
-ENV PATH="/opt/raspi/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin/:/opt/osxcross/target/bin:${PATH}"
+ENV PATH="/opt/osxcross/target/bin:${PATH}"
