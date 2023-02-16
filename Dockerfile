@@ -26,9 +26,9 @@ RUN mkdir -p /opt && \
     git clone https://github.com/tpoechtrager/osxcross /opt/osxcross && \
     bash /opt/osxcross/tools/get_dependencies.sh && \
     cd /opt/osxcross/tarballs && \
-    wget http://192.168.1.8/MacOSX10.15.sdk.tar.xz && \
-    xz -d MacOSX10.15.sdk.tar.xz && \
-    bzip2 -1 MacOSX10.15.sdk.tar
+    wget http://192.168.1.8/MacOSX10.11.sdk.tar.xz && \
+    xz -d MacOSX10.11.sdk.tar.xz && \
+    bzip2 -1 MacOSX10.11.sdk.tar
 
 # Build it
 RUN cd /opt/osxcross && UNATTENDED=1 GCC_VERSION=7.3.0 ./build.sh && UNATTENDED=1 GCC_VERSION=7.3.0 ./build_gcc.sh && rm -rf build
