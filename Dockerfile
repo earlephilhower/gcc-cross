@@ -1,16 +1,21 @@
-FROM ubuntu:18.04
-MAINTAINER Earle F. Philhower, III version: 0.5
+FROM ubuntu:20.04
+MAINTAINER Earle F. Philhower, III version: 0.7
 
 # Install dependencies
 RUN apt-get update && \
-    apt-get install -y gcc g++ make flex bison texinfo autogen mingw-w64 git \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
+                       gcc g++ make flex bison texinfo autogen mingw-w64 git \
                        libgmp3-dev libmpfr-dev libmpc-dev zlib1g-dev clang \
                        wget autoconf gcc-arm-linux-gnueabihf \
                        g++-arm-linux-gnueabihf libssl-dev libhidapi-dev \
                        gcc-aarch64-linux-gnu g++-aarch64-linux-gnu zip \
-                       python-pip gcc-i686-linux-gnu g++-i686-linux-gnu \
-                       libtool pkg-config libusb-1.0-0-dev && \
+                       python3-pip gcc-i686-linux-gnu g++-i686-linux-gnu \
+                       libtool pkg-config libusb-1.0-0-dev libtinfo6 sudo \
+                       vim-nox cmake pbzip2 && \
     pip install virtualenv
+
+# Add user and group 1000, all sudo
+RUN addgroup --gid 1000 usergroup && adduser --uid 1000 --gid 1000 --system --no-create-home user && usermod -aG sudo user && echo "user ALL=(ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/user-user
 
 # Get a cmake that's not ancient
 RUN cd /tmp && \
@@ -19,19 +24,25 @@ RUN cd /tmp && \
     cd cmake-3.20.2 && \
     ./bootstrap --parallel=12 && \
     make -j12 && \
-    make install
+    make install && \
+    rm -rf /tmp/cmake*
 
 # Get Mac crosscompile code
 RUN mkdir -p /opt && \
     git clone https://github.com/tpoechtrager/osxcross /opt/osxcross && \
     bash /opt/osxcross/tools/get_dependencies.sh && \
     cd /opt/osxcross/tarballs && \
-    wget http://192.168.1.8/MacOSX10.15.sdk.tar.xz && \
-    xz -d MacOSX10.15.sdk.tar.xz && \
-    bzip2 -1 MacOSX10.15.sdk.tar
+    wget http://192.168.1.8/MacOSX10.11.sdk.tar.xz && \
+    xz -d MacOSX10.11.sdk.tar.xz && \
+    pbzip2 MacOSX10.11.sdk.tar
 
 # Build it
-RUN cd /opt/osxcross && UNATTENDED=1 GCC_VERSION=7.3.0 ./build.sh && UNATTENDED=1 GCC_VERSION=7.3.0 ./build_gcc.sh && rm -rf build
+RUN cd /opt/osxcross && \
+    UNATTENDED=1 GCC_VERSION=7.3.0 ./build.sh && \
+    UNATTENDED=1 GCC_VERSION=7.3.0 ./build_gcc.sh && \
+    rm -rf build tarballs/* && \
+    cd /opt/osxcross/target/libexec/gcc/x86_64-apple-darwin15/7.3.0/. && \
+    strip cc1 cc1obj cc1objplus cc1plus lto1
 
 # Add /opt/* to all default PATHs
 ENV PATH="/opt/osxcross/target/bin:${PATH}"
