@@ -32,17 +32,15 @@ RUN mkdir -p /opt && \
     git clone https://github.com/tpoechtrager/osxcross /opt/osxcross && \
     bash /opt/osxcross/tools/get_dependencies.sh && \
     cd /opt/osxcross/tarballs && \
-    wget http://192.168.1.8/MacOSX10.11.sdk.tar.xz && \
-    xz -d MacOSX10.11.sdk.tar.xz && \
-    pbzip2 MacOSX10.11.sdk.tar
+    wget http://192.168.1.8/MacOSX11.3.sdk.tar.xz && \
+    xz -d MacOSX11.3.sdk.tar.xz && \
+    pbzip2 MacOSX11.3.sdk.tar
 
 # Build it
 RUN cd /opt/osxcross && \
-    UNATTENDED=1 GCC_VERSION=7.3.0 ./build.sh && \
-    UNATTENDED=1 GCC_VERSION=7.3.0 ./build_gcc.sh && \
-    rm -rf build tarballs/* && \
-    cd /opt/osxcross/target/libexec/gcc/x86_64-apple-darwin15/7.3.0/. && \
-    strip cc1 cc1obj cc1objplus cc1plus lto1
+    UNATTENDED=1 ./build.sh && \
+    UNATTENDED=1 ./build_gcc.sh && \
+    rm -rf build tarballs/*
 
 # Add /opt/* to all default PATHs
 ENV PATH="/opt/osxcross/target/bin:${PATH}"
